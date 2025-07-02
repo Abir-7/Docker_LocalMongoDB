@@ -14,7 +14,7 @@ then run: rs.initiate(
   }
 )
 
-rs.status() --> check status
+rs.status() --> check status and primary database
 
 
-uri --- "mongodb://localhost:27017/MyDB?replicaSet=rs0&directConnection=true"
+uri --- "mongodb://localhost:<primary-port>/<db_name>?replicaSet=rs0&directConnection=true"
