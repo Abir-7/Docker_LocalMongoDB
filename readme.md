@@ -21,7 +21,7 @@ rs.status() --> check status and primary database
 
 
 .evn uri----- "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/<db_name>?replicaSet=rs0"
-compass-uri --- "mongodb://localhost:<primary-port>/<db_name>?replicaSet=rs0&directConnection=true"
+compass-uri --- "mongodb://localhost:<primary-db-port>/?directConnection=true"
 
 
 note: need to enable network share
@@ -33,4 +33,11 @@ in each service yml
 in last in yml file
   networks:
     mongo-cluster:
-      external: true
+      external: true 
+
+
+
+
+
+
+
