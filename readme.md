@@ -61,7 +61,7 @@ This guide explains how to set up a MongoDB replica set locally using Docker Com
 
 ---
 
-## docker-compose.yml Example
+## docker-compose.yml Example - for Express server to conncet local mongodb
 
 ```yaml
 version: "3.9"
