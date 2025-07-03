@@ -40,4 +40,5 @@ volumes:
   mongo3-data:
 
 networks:
-  mongo-cluster:  # No external: true
+  mongo-cluster:
+    external: true
