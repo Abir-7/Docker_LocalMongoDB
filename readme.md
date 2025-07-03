@@ -17,4 +17,6 @@ then run: rs.initiate(
 rs.status() --> check status and primary database
 
 
-uri --- "mongodb://localhost:<primary-port>/<db_name>?replicaSet=rs0&directConnection=true"
+
+.evn uri----- "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/<db_name>?replicaSet=rs0"
+compass-uri --- "mongodb://localhost:<primary-port>/<db_name>?replicaSet=rs0&directConnection=true"
