@@ -1,43 +1,99 @@
-run:docker network create mongo-cluster
+# MongoDB Replica Set Setup with Docker Compose
 
-then run:docker-compose up -d
+This guide explains how to set up a MongoDB replica set locally using Docker Compose.
 
-then run: docker exec -it mongo1 mongosh
+---
 
+## Steps
 
-then run: rs.initiate(
-  {
-    _id: "rs0",
-    members: [
-      { _id: 0, host: "mongo1:27017" },
-      { _id: 1, host: "mongo2:27017" },
-      { _id: 2, host: "mongo3:27017" }
-    ]
-  }
-)
+1. **Create a Docker network for the replica set:**
 
-rs.status() --> check status and primary database
+    ```bash
+    docker network create mongo-cluster
+    ```
 
+2. **Start the MongoDB containers:**
 
+    ```bash
+    docker-compose up -d
+    ```
 
-.evn uri----- "mongodb://mongo1:27017,mongo2:27017,mongo3:27017/<db_name>?replicaSet=rs0"
-compass-uri --- "mongodb://localhost:<primary-db-port>/?directConnection=true"
+3. **Connect to the primary MongoDB container:**
 
+    ```bash
+    docker exec -it mongo1 mongosh
+    ```
 
-note: need to enable network share
+4. **Initiate the replica set inside the `mongosh` shell:**
 
-in each service yml
- networks:
+    ```js
+    rs.initiate({
+      _id: "rs0",
+      members: [
+        { _id: 0, host: "mongo1:27017" },
+        { _id: 1, host: "mongo2:27017" },
+        { _id: 2, host: "mongo3:27017" }
+      ]
+    })
+    ```
+
+5. **Check replica set status:**
+
+    ```js
+    rs.status()
+    ```
+    Look for `"stateStr" : "PRIMARY"` to find your primary database.
+
+---
+
+## Connection Strings
+
+- **Application (.env) URI:**
+    ```
+    mongodb://mongo1:27017,mongo2:27017,mongo3:27017/<db_name>?replicaSet=rs0
+    ```
+
+- **MongoDB Compass URI:**
+    ```
+    mongodb://localhost:<primary-db-port>/?directConnection=true
+    ```
+    Replace `<primary-db-port>` with the port mapped for the primary (default is 27017).
+
+---
+
+## docker-compose.yml Example
+
+```yaml
+version: "3.9"
+
+services:
+  sass-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: sass-solution
+    ports:
+      - "5673:5672"  # Changed left port to avoid conflict with old project
+      - "15673:15672" # Changed left port to avoid conflict with old project
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
       - mongo-cluster
 
-in last in yml file
-  networks:
-    mongo-cluster:
-      external: true 
+  sass-express:
+    build: .
+    depends_on:
+      - sass-rabbitmq
+    env_file:
+      - .env
+    ports:
+      - "4002:4000" # Changed left port to avoid conflict with old project
+    volumes:
+      - .:/app
+    command: npm run dev
+    networks:
+      - mongo-cluster
 
 
-
-
-
-
-
+networks:
+  mongo-cluster:
+    external: true
